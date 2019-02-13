@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using DummyMessages;
 using NServiceBus;
@@ -8,6 +7,8 @@ using NServiceBus.Logging;
 
 namespace DummySender
 {
+    using System.Collections.Generic;
+
     class Program
     {
         static async Task Main(string[] args)
@@ -21,10 +22,9 @@ namespace DummySender
             config.AuditProcessedMessagesTo("audit");
             config.SendOnly();
 
-            // Cinfigure ASB
+            // Configure ASB
             var transport = config.UseTransport<AzureServiceBusTransport>();
-            transport.ConnectionString("");
-            transport.TopicName("master");
+            transport.ConnectionString(Environment.GetEnvironmentVariable("AzureServiceBus_ConnectionString"));
 
             var endpointInstance = await Endpoint.Start(config)
                 .ConfigureAwait(false);
@@ -32,24 +32,23 @@ namespace DummySender
             Console.WriteLine("Press enter to send a message");
             Console.WriteLine("Press any key to exit");
 
-            #region ClientLoop
+            var count = 200;
+            var numberOfMessages = count;
+            var tasks = new List<Task>();
 
-            while (true)
+            while (count-- > 0)
             {
                 var fooEvent = new FooEvent
                 {
                     Id = Guid.NewGuid().ToString()
                 };
-                
-                Console.WriteLine($"Sending event with ID {fooEvent.Id}");
 
-                await endpointInstance.Publish(fooEvent)
-                    .ConfigureAwait(false);
-                
-                Thread.Sleep(50);
+                tasks.Add(endpointInstance.Publish(fooEvent));
             }
 
-            #endregion
+            Console.WriteLine($"Sending {numberOfMessages} messages...");
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            Console.WriteLine("Done.");
         }
     }
 }
