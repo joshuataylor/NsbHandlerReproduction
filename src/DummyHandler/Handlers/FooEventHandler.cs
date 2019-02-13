@@ -25,7 +25,7 @@ namespace DummyHandler.Handlers
                 i++;
                 Console.WriteLine($"Sending BarEvent with ID {barEvent.Id}");
                 await context.Publish(barEvent).ConfigureAwait(false);
-                Console.WriteLine($"Sent BarEvent with ID {barEvent.Id}");
+                Console.WriteLine($"Published BarEvent to send with ID {barEvent.Id}");
             }
         }
     }

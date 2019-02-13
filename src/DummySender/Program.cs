@@ -19,7 +19,7 @@ namespace DummySender
             config.UseSerialization<NewtonsoftSerializer>();
             config.SendFailedMessagesTo("error");
             config.AuditProcessedMessagesTo("audit");
-            config.LimitMessageProcessingConcurrencyTo(1);
+            config.SendOnly();
 
             // Cinfigure ASB
             var transport = config.UseTransport<AzureServiceBusTransport>();
