@@ -10,7 +10,7 @@ namespace DummyHandler.Handlers
         // Just send the BarEvent here
         public async Task Handle(FooEvent message, IMessageHandlerContext context)
         {
-            Console.WriteLine($"Received Message with ID {message.Id}, sleeping 30ms seconds to simulate normal usage");
+            Console.WriteLine($"Received Message with ID {message.Id}, sleeping 30ms to simulate normal usage");
             await Task.Delay(30);
 
             var i = 0;
