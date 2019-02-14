@@ -5,6 +5,8 @@ using NServiceBus;
 
 namespace DummyHandler.Handlers
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using NServiceBus.Logging;
 
     public class FooEventHandler : IHandleMessages<FooEvent>
@@ -15,21 +17,18 @@ namespace DummyHandler.Handlers
         public async Task Handle(FooEvent message, IMessageHandlerContext context)
         {
             log.Info($"Received FooEvent with ID {message.Id}, sleeping 30ms to simulate normal usage");
+
             await Task.Delay(30);
 
-            var i = 0;
-            // Send 10 events from here
-            while (i <= 10)
-            {
-                var barEvent = new BarEvent
-                {
-                    Id = Guid.NewGuid().ToString()
-                };
+            var numberOfEventsToPublish = 10;
+            var events = Enumerable.Range(1, numberOfEventsToPublish).Select(_ => new BarEvent {Id = Guid.NewGuid().ToString()});
 
-                i++;
-                await context.Publish(barEvent).ConfigureAwait(false);
-            }
-            log.Info("Published 10 BarEvent events.");
+            var tasks = new List<Task>(numberOfEventsToPublish);
+            tasks.AddRange(events.Select(@event => context.Publish(@event)));
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            log.Info($"Published {numberOfEventsToPublish} BarEvent events.");
         }
     }
 }
