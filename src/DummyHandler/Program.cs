@@ -19,14 +19,14 @@ namespace DummyHandler
             config.AuditProcessedMessagesTo("audit");
             config.LimitMessageProcessingConcurrencyTo(10);
 
-            // Cinfigure ASB
+            // Configure ASB
             var transport = config.UseTransport<AzureServiceBusTransport>();
-            transport.ConnectionString("");
-            transport.TopicName("master");
+            transport.ConnectionString(Environment.GetEnvironmentVariable("AzureServiceBus_ConnectionString"));
+            transport.PrefetchCount(2);
 
             var endpointInstance = await Endpoint.Start(config)
                 .ConfigureAwait(false);
-            
+
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
             await endpointInstance.Stop()
