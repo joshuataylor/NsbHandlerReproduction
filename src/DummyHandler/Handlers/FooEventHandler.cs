@@ -5,12 +5,16 @@ using NServiceBus;
 
 namespace DummyHandler.Handlers
 {
+    using NServiceBus.Logging;
+
     public class FooEventHandler : IHandleMessages<FooEvent>
     {
+        static ILog log = LogManager.GetLogger<FooEventHandler>();
+
         // Just send the BarEvent here
         public async Task Handle(FooEvent message, IMessageHandlerContext context)
         {
-            Console.WriteLine($"Received Message with ID {message.Id}, sleeping 30ms to simulate normal usage");
+            log.Info($"Received Message with ID {message.Id}, sleeping 30ms to simulate normal usage");
             await Task.Delay(30);
 
             var i = 0;
@@ -25,7 +29,7 @@ namespace DummyHandler.Handlers
                 i++;
                 await context.Publish(barEvent).ConfigureAwait(false);
             }
-            Console.WriteLine($"Published 10 BarEvent events.");
+            log.Info("Published 10 BarEvent events.");
         }
     }
 }
