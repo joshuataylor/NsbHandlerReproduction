@@ -17,12 +17,12 @@ namespace DummyHandler
             config.UseSerialization<NewtonsoftSerializer>();
             config.SendFailedMessagesTo("error");
             config.AuditProcessedMessagesTo("audit");
-            config.LimitMessageProcessingConcurrencyTo(10);
+            config.LimitMessageProcessingConcurrencyTo(1);
 
             // Configure ASB
             var transport = config.UseTransport<AzureServiceBusTransport>();
             transport.ConnectionString(Environment.GetEnvironmentVariable("AzureServiceBus_ConnectionString"));
-            transport.PrefetchCount(2);
+            //transport.PrefetchCount(1);
 
             var endpointInstance = await Endpoint.Start(config)
                 .ConfigureAwait(false);
