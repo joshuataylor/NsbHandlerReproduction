@@ -32,7 +32,7 @@ namespace DummySender
             Console.WriteLine("Press enter to send a message");
             Console.WriteLine("Press any key to exit");
 
-            var count = 200;
+            var count = 2000;
             var numberOfMessages = count;
             var tasks = new List<Task>();
 
